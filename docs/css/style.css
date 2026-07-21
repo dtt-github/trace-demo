@@ -382,6 +382,15 @@ main { flex: 1; min-height: 0; }
   font-variant-numeric: tabular-nums;
 }
 
+.kpi-value.flash {
+  animation: kpi-flash 0.55s var(--ease);
+}
+
+@keyframes kpi-flash {
+  0% { color: var(--accent); transform: scale(1.04); }
+  100% { color: var(--ink); transform: scale(1); }
+}
+
 /* Metrics table */
 .metrics {
   font-family: var(--mono);

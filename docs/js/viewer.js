@@ -162,9 +162,7 @@ export class TraceViewer {
     }
   }
 
-  showPcg(pcg, routes = null) {
-    this._lastPcg = pcg;
-    this._lastRoutes = routes;
+  drawScene(pcg, { fit = true } = {}) {
     this.clear();
     for (const c of pcg.components) {
       const mn = [c.bbox_min.x, c.bbox_min.y, c.bbox_min.z];
@@ -179,13 +177,48 @@ export class TraceViewer {
         [z.bbox_max.x, z.bbox_max.y, z.bbox_max.z]
       );
     }
+    if (pcg.ports) this.addPorts(pcg.ports);
+    if (fit) this.fitCamera(pcg.zones?.[0] || pcg.components[0]);
+  }
+
+  showPcg(pcg, routes = null) {
+    this._lastPcg = pcg;
+    this._lastRoutes = routes;
+    this.drawScene(pcg);
     if (routes) {
       for (const [id, r] of Object.entries(routes)) {
         this.addRoute(id, r.waypoints, r.dn);
       }
     }
-    if (pcg.ports) this.addPorts(pcg.ports);
-    this.fitCamera(pcg.zones?.[0] || pcg.components[0]);
+  }
+
+  /** Clear tubes, then draw each route growing along its waypoints. */
+  async playRoutes(pcg, routes, { stepMs = 90 } = {}) {
+    this._lastPcg = pcg;
+    this._lastRoutes = routes;
+    if (this._playToken) this._playToken.cancelled = true;
+    const token = { cancelled: false };
+    this._playToken = token;
+
+    this.drawScene(pcg, { fit: !this._hasFramed });
+    this._hasFramed = true;
+    await sleep(180);
+    if (token.cancelled) return;
+
+    for (const [id, r] of Object.entries(routes)) {
+      const wps = r.waypoints;
+      for (let i = 2; i <= wps.length; i++) {
+        if (token.cancelled) return;
+        // Remove previous partial for this id by rebuilding scene + finished routes
+        this.drawScene(pcg, { fit: false });
+        for (const [doneId, done] of Object.entries(routes)) {
+          if (doneId === id) break;
+          this.addRoute(doneId, done.waypoints, done.dn);
+        }
+        this.addRoute(id, wps.slice(0, i), r.dn);
+        await sleep(stepMs);
+      }
+    }
   }
 
   refit() {
@@ -216,7 +249,12 @@ export class TraceViewer {
   }
 
   dispose() {
+    if (this._playToken) this._playToken.cancelled = true;
     this._ro.disconnect();
     this.renderer.dispose();
   }
+}
+
+function sleep(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
 }

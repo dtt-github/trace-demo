@@ -17,7 +17,12 @@ function setKpi(container, values) {
   const nodes = container.querySelectorAll(".kpi");
   values.forEach((v, i) => {
     const el = nodes[i]?.querySelector(".kpi-value");
-    if (el) el.textContent = v;
+    if (el) {
+      el.textContent = v;
+      el.classList.remove("flash");
+      void el.offsetWidth;
+      el.classList.add("flash");
+    }
   });
 }
 
@@ -58,12 +63,18 @@ async function initV1() {
     btn.disabled = true;
     btn.textContent = "Routing…";
     try {
+      // Show empty skid first so the re-run is obvious
+      viewerV1.drawScene(pcgV1);
+      setKpi(kpiEl, ["…", "…", "50", "…"]);
+
       const t0 = performance.now();
       const spec = pcgV1.tube_runs[0];
       const result = routeOne(pcgV1, spec);
       const ms = Math.round(performance.now() - t0);
       const routes = { [spec.id]: result };
-      viewerV1.showPcg(pcgV1, routes);
+
+      await viewerV1.playRoutes(pcgV1, routes, { stepMs: 110 });
+
       renderMetricsTable(metricsEl, routes);
       setKpi(kpiEl, [
         `${fmtMm(result.length_mm)} mm`,
@@ -71,8 +82,9 @@ async function initV1() {
         String(result.dn),
         `${ms} ms`,
       ]);
-      log(logEl, `routed ${spec.id}: ${result.waypoints.length} waypoints, ${result.bends} bends, ${fmtMm(result.length_mm)} mm`);
-      log(logEl, `computed in ${ms} ms · deterministic A*`);
+      log(logEl, `A* solved ${spec.id} in the browser`);
+      log(logEl, `${result.waypoints.length} waypoints · ${result.bends} bends · ${fmtMm(result.length_mm)} mm`);
+      log(logEl, `compute time ${ms} ms · same input → same path (deterministic)`);
       for (const w of result.waypoints) {
         log(logEl, `  (${w.map((v) => Math.round(v)).join(", ")})`);
       }
@@ -80,7 +92,7 @@ async function initV1() {
       log(logEl, `ERROR: ${e.message}`);
     } finally {
       btn.disabled = false;
-      btn.textContent = "Run routing";
+      btn.textContent = "Re-run routing";
     }
   }
 
@@ -102,10 +114,15 @@ async function initV2() {
     btn.disabled = true;
     btn.textContent = "Routing…";
     try {
+      viewerV2.drawScene(pcgV2);
+      setKpi(kpiEl, ["…", "…", "5", "…"]);
+
       const t0 = performance.now();
       const routes = routeAll(pcgV2);
       const ms = Math.round(performance.now() - t0);
-      viewerV2.showPcg(pcgV2, routes);
+
+      await viewerV2.playRoutes(pcgV2, routes, { stepMs: 70 });
+
       const { totL, totB } = renderMetricsTable(metricsEl, routes);
       setKpi(kpiEl, [
         `${fmtMm(totL)} mm`,
@@ -113,7 +130,8 @@ async function initV2() {
         String(Object.keys(routes).length),
         `${ms} ms`,
       ]);
-      log(logEl, `5 tube runs routed sequentially (${ms} ms)`);
+      log(logEl, `A* solved 5 runs sequentially in the browser (${ms} ms)`);
+      log(logEl, `each finished tube becomes an obstacle for the next`);
       for (const [id, r] of Object.entries(routes)) {
         log(logEl, `${id}  DN${r.dn}  ${fmtMm(r.length_mm)} mm  ${r.bends} bends`);
       }
@@ -121,7 +139,7 @@ async function initV2() {
       log(logEl, `ERROR: ${e.message}`);
     } finally {
       btn.disabled = false;
-      btn.textContent = "Run all routes";
+      btn.textContent = "Re-run all routes";
     }
   }
 
