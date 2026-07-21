@@ -1,47 +1,67 @@
-/** Three.js 3D scene for TRACE routing visualization. */
+/** Three.js scene for TRACE routing visualization. */
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 
 const COLORS = {
-  compressor: 0x4c78a8,
-  aftercooler: 0x72b7b2,
-  vessel: 0xe45756,
-  frame: 0xbab0ac,
-  F1: 0xb279a2, C1: 0x4c78a8, M1: 0x9d755d, A1: 0x72b7b2,
-  V1: 0xe45756, R1: 0xf2cf5b, DH: 0x7f7f7f, CT: 0xbab0ac,
+  compressor: 0x3b6ea5,
+  aftercooler: 0x5a9e99,
+  vessel: 0xc45b55,
+  frame: 0xa8a29e,
+  F1: 0x8f6a9e, C1: 0x3b6ea5, M1: 0x8a6a52, A1: 0x5a9e99,
+  V1: 0xc45b55, R1: 0xd4a84b, DH: 0x6b7280, CT: 0xa8a29e,
 };
 
 const TUBE_COLORS = {
-  "TR-07": 0xf58518,
-  "TR-01": 0xf58518, "TR-02": 0xe45756, "TR-03": 0x54a24b,
-  "TR-04": 0x4c78a8, "TR-05": 0xb279a2,
+  "TR-07": 0xc2410c,
+  "TR-01": 0xc2410c, "TR-02": 0xb91c1c, "TR-03": 0x15803d,
+  "TR-04": 0x1d4ed8, "TR-05": 0x7e22ce,
 };
 
 export class TraceViewer {
   constructor(container) {
     this.container = container;
+    this._lastPcg = null;
+    this._lastRoutes = null;
+
     this.scene = new THREE.Scene();
-    this.scene.background = new THREE.Color(0xf0f3f6);
+    this.scene.background = new THREE.Color(0xe8edf2);
+    this.scene.fog = new THREE.Fog(0xe8edf2, 4500, 9000);
+
     this.group = new THREE.Group();
     this.scene.add(this.group);
 
     const w = container.clientWidth || 640;
     const h = container.clientHeight || 420;
-    this.camera = new THREE.PerspectiveCamera(42, w / h, 1, 20000);
-    this.renderer = new THREE.WebGLRenderer({ antialias: true });
+    this.camera = new THREE.PerspectiveCamera(40, w / h, 1, 30000);
+    this.renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false });
     this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     this.renderer.setSize(w, h);
+    this.renderer.outputColorSpace = THREE.SRGBColorSpace;
     container.appendChild(this.renderer.domElement);
 
     this.controls = new OrbitControls(this.camera, this.renderer.domElement);
     this.controls.enableDamping = true;
+    this.controls.dampingFactor = 0.08;
+    this.controls.maxPolarAngle = Math.PI * 0.92;
 
-    const amb = new THREE.AmbientLight(0xffffff, 0.72);
-    const dir = new THREE.DirectionalLight(0xffffff, 0.65);
-    dir.position.set(1200, 1800, 900);
-    const fill = new THREE.DirectionalLight(0xdce6f0, 0.35);
-    fill.position.set(-900, 400, -600);
-    this.scene.add(amb, dir, fill);
+    const hemi = new THREE.HemisphereLight(0xf8fafc, 0xb0b8c4, 0.85);
+    const key = new THREE.DirectionalLight(0xffffff, 0.75);
+    key.position.set(1400, 2200, 1100);
+    const fill = new THREE.DirectionalLight(0xdbe4ee, 0.4);
+    fill.position.set(-1200, 600, -800);
+    this.scene.add(hemi, key, fill);
+
+    // Data is Z-up; GridHelper defaults to XZ (Y-up floor) → rotate onto XY.
+    this._grid = new THREE.GridHelper(4800, 48, 0xb0bac6, 0xcbd2db);
+    this._grid.rotation.x = Math.PI / 2;
+    this._grid.position.set(1200, 600, 0);
+    if (Array.isArray(this._grid.material)) {
+      this._grid.material.forEach((m) => { m.transparent = true; m.opacity = 0.5; });
+    } else {
+      this._grid.material.transparent = true;
+      this._grid.material.opacity = 0.5;
+    }
+    this.scene.add(this._grid);
 
     this._anim = () => {
       this.controls.update();
@@ -57,28 +77,43 @@ export class TraceViewer {
   resize() {
     const w = this.container.clientWidth;
     const h = this.container.clientHeight || 420;
+    if (!w || !h) return;
     this.camera.aspect = w / h;
     this.camera.updateProjectionMatrix();
     this.renderer.setSize(w, h);
   }
 
   clear() {
-    while (this.group.children.length)
-      this.group.remove(this.group.children[0]);
+    while (this.group.children.length) {
+      const obj = this.group.children[0];
+      this.group.remove(obj);
+      obj.traverse?.((n) => {
+        n.geometry?.dispose?.();
+        if (n.material) {
+          if (Array.isArray(n.material)) n.material.forEach((m) => m.dispose());
+          else n.material.dispose();
+        }
+      });
+    }
   }
 
-  addBox(mn, mx, color, opacity = 0.35) {
+  addBox(mn, mx, color, opacity = 0.38) {
     const size = mx.map((v, i) => v - mn[i]);
     const center = mn.map((v, i) => v + size[i] / 2);
     const geo = new THREE.BoxGeometry(size[0], size[1], size[2]);
-    const mat = new THREE.MeshPhongMaterial({
-      color, transparent: true, opacity: Math.min(opacity + 0.08, 0.55), depthWrite: false,
+    const mat = new THREE.MeshStandardMaterial({
+      color,
+      transparent: true,
+      opacity,
+      roughness: 0.72,
+      metalness: 0.08,
+      depthWrite: false,
     });
     const mesh = new THREE.Mesh(geo, mat);
     mesh.position.set(center[0], center[1], center[2]);
     const edges = new THREE.LineSegments(
       new THREE.EdgesGeometry(geo),
-      new THREE.LineBasicMaterial({ color: 0x2a3540 })
+      new THREE.LineBasicMaterial({ color: 0x1f2937, transparent: true, opacity: 0.45 })
     );
     edges.position.copy(mesh.position);
     this.group.add(mesh, edges);
@@ -88,27 +123,38 @@ export class TraceViewer {
     const size = mx.map((v, i) => v - mn[i]);
     const center = mn.map((v, i) => v + size[i] / 2);
     const geo = new THREE.BoxGeometry(size[0], size[1], size[2]);
-    const mat = new THREE.MeshBasicMaterial({
-      color: 0x999999, transparent: true, opacity: 0.04, wireframe: false,
-    });
-    const mesh = new THREE.Mesh(geo, mat);
-    mesh.position.set(center[0], center[1], center[2]);
-    this.group.add(mesh);
+    const edges = new THREE.LineSegments(
+      new THREE.EdgesGeometry(geo),
+      new THREE.LineDashedMaterial({
+        color: 0x6b7280,
+        dashSize: 40,
+        gapSize: 24,
+        transparent: true,
+        opacity: 0.55,
+      })
+    );
+    edges.computeLineDistances();
+    edges.position.set(center[0], center[1], center[2]);
+    this.group.add(edges);
   }
 
   addRoute(id, waypoints, dn = 50) {
-    const pts = waypoints.map(p => new THREE.Vector3(p[0], p[1], p[2]));
-    const curve = new THREE.CatmullRomCurve3(pts, false, "catmullrom", 0.15);
-    const radius = 2 + dn / 18;
-    const geo = new THREE.TubeGeometry(curve, Math.max(pts.length * 8, 32), radius, 8, false);
-    const color = TUBE_COLORS[id] ?? 0xf58518;
-    const mat = new THREE.MeshPhongMaterial({ color, shininess: 30 });
+    const pts = waypoints.map((p) => new THREE.Vector3(p[0], p[1], p[2]));
+    const curve = new THREE.CatmullRomCurve3(pts, false, "catmullrom", 0.08);
+    const radius = 3 + dn / 16;
+    const geo = new THREE.TubeGeometry(curve, Math.max(pts.length * 12, 48), radius, 12, false);
+    const color = TUBE_COLORS[id] ?? 0xc2410c;
+    const mat = new THREE.MeshStandardMaterial({
+      color,
+      roughness: 0.35,
+      metalness: 0.25,
+    });
     this.group.add(new THREE.Mesh(geo, mat));
   }
 
   addPorts(ports) {
-    const geo = new THREE.SphereGeometry(12, 12, 12);
-    const mat = new THREE.MeshPhongMaterial({ color: 0x111111 });
+    const geo = new THREE.SphereGeometry(10, 16, 16);
+    const mat = new THREE.MeshStandardMaterial({ color: 0x111827, roughness: 0.4, metalness: 0.2 });
     for (const p of ports) {
       const m = new THREE.Mesh(geo, mat);
       m.position.set(p.position.x, p.position.y, p.position.z);
@@ -117,6 +163,8 @@ export class TraceViewer {
   }
 
   showPcg(pcg, routes = null) {
+    this._lastPcg = pcg;
+    this._lastRoutes = routes;
     this.clear();
     for (const c of pcg.components) {
       const mn = [c.bbox_min.x, c.bbox_min.y, c.bbox_min.z];
@@ -126,29 +174,44 @@ export class TraceViewer {
     }
     if (pcg.zones?.[0]) {
       const z = pcg.zones[0];
-      this.addEnvelope([z.bbox_min.x, z.bbox_min.y, z.bbox_min.z],
-                       [z.bbox_max.x, z.bbox_max.y, z.bbox_max.z]);
+      this.addEnvelope(
+        [z.bbox_min.x, z.bbox_min.y, z.bbox_min.z],
+        [z.bbox_max.x, z.bbox_max.y, z.bbox_max.z]
+      );
     }
     if (routes) {
-      for (const [id, r] of Object.entries(routes))
+      for (const [id, r] of Object.entries(routes)) {
         this.addRoute(id, r.waypoints, r.dn);
+      }
     }
     if (pcg.ports) this.addPorts(pcg.ports);
     this.fitCamera(pcg.zones?.[0] || pcg.components[0]);
   }
 
+  refit() {
+    if (this._lastPcg) {
+      this.fitCamera(this._lastPcg.zones?.[0] || this._lastPcg.components[0]);
+    }
+  }
+
   fitCamera(zoneOrComp) {
-    let mn, mx;
-    if (zoneOrComp.bbox_min) {
+    let mn;
+    let mx;
+    if (zoneOrComp?.bbox_min) {
       mn = [zoneOrComp.bbox_min.x, zoneOrComp.bbox_min.y, zoneOrComp.bbox_min.z];
       mx = [zoneOrComp.bbox_max.x, zoneOrComp.bbox_max.y, zoneOrComp.bbox_max.z];
     } else {
-      mn = [0, 0, 0]; mx = [2000, 1000, 1100];
+      mn = [0, 0, 0];
+      mx = [2000, 1000, 1100];
     }
     const center = mn.map((v, i) => (v + mx[i]) / 2);
-    const span = Math.max(...mx.map((v, i) => v - mn[i]));
-    this.camera.position.set(center[0] + span * 0.9, center[1] + span * 0.6, center[2] + span * 0.7);
-    this.controls.target.set(center[0], center[1], center[2]);
+    const span = Math.max(...mx.map((v, i) => v - mn[i]), 800);
+    this.camera.position.set(
+      center[0] + span * 0.85,
+      center[1] + span * 0.55,
+      center[2] + span * 0.7
+    );
+    this.controls.target.set(center[0], center[1], center[2] * 0.45);
     this.controls.update();
   }
 
