@@ -93,7 +93,7 @@ async function initV2() {
 }
 
 function initTabs() {
-  const tabs = document.querySelectorAll(".tab");
+  const tabs = document.querySelectorAll(".nav-item");
   const panels = document.querySelectorAll(".panel");
   tabs.forEach(tab => {
     tab.addEventListener("click", () => {
@@ -101,8 +101,10 @@ function initTabs() {
       panels.forEach(p => p.classList.remove("active"));
       tab.classList.add("active");
       document.getElementById(tab.dataset.panel).classList.add("active");
-      if (tab.dataset.panel === "panel-v1") viewerV1?.resize();
-      if (tab.dataset.panel === "panel-v2") viewerV2?.resize();
+      requestAnimationFrame(() => {
+        if (tab.dataset.panel === "panel-v1") viewerV1?.resize();
+        if (tab.dataset.panel === "panel-v2") viewerV2?.resize();
+      });
     });
   });
 }

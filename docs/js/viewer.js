@@ -21,7 +21,7 @@ export class TraceViewer {
   constructor(container) {
     this.container = container;
     this.scene = new THREE.Scene();
-    this.scene.background = new THREE.Color(0x0a0e14);
+    this.scene.background = new THREE.Color(0xf0f3f6);
     this.group = new THREE.Group();
     this.scene.add(this.group);
 
@@ -36,10 +36,12 @@ export class TraceViewer {
     this.controls = new OrbitControls(this.camera, this.renderer.domElement);
     this.controls.enableDamping = true;
 
-    const amb = new THREE.AmbientLight(0xffffff, 0.55);
-    const dir = new THREE.DirectionalLight(0xffffff, 0.85);
+    const amb = new THREE.AmbientLight(0xffffff, 0.72);
+    const dir = new THREE.DirectionalLight(0xffffff, 0.65);
     dir.position.set(1200, 1800, 900);
-    this.scene.add(amb, dir);
+    const fill = new THREE.DirectionalLight(0xdce6f0, 0.35);
+    fill.position.set(-900, 400, -600);
+    this.scene.add(amb, dir, fill);
 
     this._anim = () => {
       this.controls.update();
@@ -70,13 +72,13 @@ export class TraceViewer {
     const center = mn.map((v, i) => v + size[i] / 2);
     const geo = new THREE.BoxGeometry(size[0], size[1], size[2]);
     const mat = new THREE.MeshPhongMaterial({
-      color, transparent: true, opacity, depthWrite: false,
+      color, transparent: true, opacity: Math.min(opacity + 0.08, 0.55), depthWrite: false,
     });
     const mesh = new THREE.Mesh(geo, mat);
     mesh.position.set(center[0], center[1], center[2]);
     const edges = new THREE.LineSegments(
       new THREE.EdgesGeometry(geo),
-      new THREE.LineBasicMaterial({ color: 0x333333 })
+      new THREE.LineBasicMaterial({ color: 0x2a3540 })
     );
     edges.position.copy(mesh.position);
     this.group.add(mesh, edges);

@@ -7,7 +7,7 @@
   <title>TRACE — Deterministic Routing Demo</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&family=Archivo+Narrow:wght@600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/style.css">
   <script type="importmap">
   {
@@ -19,94 +19,178 @@
   </script>
 </head>
 <body>
-  <header>
-    <h1><span>TRACE</span> — deterministic routing core</h1>
-    <p>PCG constraint graph → A* router → parametric sweep → STEP. Run the routing solver live in your browser (zero ML).</p>
-  </header>
-
-  <nav class="tabs">
-    <button class="tab active" data-panel="panel-v1">v1 · Single tube</button>
-    <button class="tab" data-panel="panel-v2">v2 · Compressor package</button>
-    <button class="tab" data-panel="panel-v3">v3 · Component synthesis</button>
-  </nav>
-
-  <main>
-    <!-- v1 -->
-    <section id="panel-v1" class="panel active">
-      <h2>Single-tube routing (TR-07)</h2>
-      <p class="subtitle">A* on a 25 mm voxel grid with clearance inflation, bend penalty, and port-normal stubs.</p>
-      <div class="layout">
-        <div class="viewer-wrap" id="viewer-v1">
-          <div class="viewer-hint">Drag to orbit · scroll to zoom</div>
-        </div>
-        <aside class="sidebar">
-          <div class="card">
-            <h3>Actions</h3>
-            <button class="btn" id="run-v1">Run routing</button>
-            <div class="downloads" style="margin-top:0.75rem">
-              <a href="assets/trace_teaser.png" download>PNG render</a>
-              <a href="assets/TR-07_tube.step" download>STEP tube</a>
-              <a href="assets/pcg.json" download>PCG JSON</a>
-            </div>
-          </div>
-          <div class="card metrics" id="metrics-v1"><h3>Metrics</h3></div>
-          <div class="card"><h3>Log</h3><div class="log" id="log-v1"></div></div>
-        </aside>
+  <div class="page">
+    <header class="top">
+      <div class="brand">
+        <a class="mark" href="./">TRACE</a>
+        <span class="divider" aria-hidden="true"></span>
+        <p class="tagline">Deterministic routing core</p>
       </div>
-      <img class="render-img" src="assets/trace_teaser.png" alt="TRACE v1 render" loading="lazy">
-    </section>
+      <p class="meta">PCG → A* → STEP · zero ML</p>
+    </header>
 
-    <!-- v2 -->
-    <section id="panel-v2" class="panel">
-      <h2>Multi-tube compressor package</h2>
-      <p class="subtitle">8 assets, 5 tube runs routed sequentially — each routed tube becomes an obstacle for the next.</p>
-      <div class="layout">
-        <div class="viewer-wrap" id="viewer-v2">
-          <div class="viewer-hint">Drag to orbit · scroll to zoom</div>
-        </div>
-        <aside class="sidebar">
-          <div class="card">
-            <h3>Actions</h3>
-            <button class="btn" id="run-v2">Run all routes</button>
-            <div class="downloads" style="margin-top:0.75rem">
-              <a href="assets/trace_teaser_v2.png" download>PNG render</a>
-              <a href="assets/package_piping_v2.step" download>STEP assembly</a>
-              <a href="assets/pcg_v2.json" download>PCG JSON</a>
-            </div>
+    <nav class="nav" aria-label="Demo versions">
+      <button class="nav-item active" data-panel="panel-v1" type="button">
+        <span class="nav-num">01</span>
+        <span class="nav-label">Single tube</span>
+      </button>
+      <button class="nav-item" data-panel="panel-v2" type="button">
+        <span class="nav-num">02</span>
+        <span class="nav-label">Compressor package</span>
+      </button>
+      <button class="nav-item" data-panel="panel-v3" type="button">
+        <span class="nav-num">03</span>
+        <span class="nav-label">Component synthesis</span>
+      </button>
+    </nav>
+
+    <main>
+      <section id="panel-v1" class="panel active">
+        <div class="panel-head">
+          <div>
+            <h1>Single-tube routing</h1>
+            <p>A* on a 25&nbsp;mm voxel grid with clearance inflation, bend penalty, and port-normal stubs.</p>
           </div>
-          <div class="card metrics" id="metrics-v2"><h3>Metrics</h3></div>
-          <div class="card"><h3>Log</h3><div class="log" id="log-v2"></div></div>
-        </aside>
-      </div>
-      <img class="render-img" src="assets/trace_teaser_v2.png" alt="TRACE v2 render" loading="lazy">
-    </section>
+          <p class="run-id">TR-07 · DN50</p>
+        </div>
 
-    <!-- v3 -->
-    <section id="panel-v3" class="panel">
-      <h2>Component-in-assembly synthesis</h2>
-      <p class="subtitle">Hole-pattern registration → constraint-solved parameters → parametric adapter flange → compliance check.</p>
-      <div class="layout">
-        <div class="card" style="grid-column: 1 / -1">
-          <div class="status">Verdict: APPROVED for review — all compliance checks passed</div>
-          <ul class="checks" style="margin-top:0.75rem">
-            <li><span class="tag pass">PASS</span> <strong>HOLE-ALIGN</strong> max axis deviation 0.000 mm ≤ 0.10 mm</li>
-            <li><span class="tag pass">PASS</span> <strong>COVERAGE</strong> plate OD 175.2 ≥ opening 82 + 2×12 seal land = 106.0 mm</li>
-            <li><span class="tag pass">PASS</span> <strong>ENVELOPE</strong> protrusion 70.0 mm ≤ max 70.0 mm</li>
-            <li><span class="tag pass">PASS</span> <strong>PATTERN</strong> 8× diam 11 on BC diam 140 from extracted pattern</li>
+        <div class="workspace">
+          <div class="viewer-shell">
+            <div class="viewer-wrap" id="viewer-v1"></div>
+            <p class="viewer-hint">Orbit · zoom · pan</p>
+          </div>
+
+          <aside class="console">
+            <div class="console-block">
+              <button class="btn" id="run-v1" type="button">Run routing</button>
+              <ul class="file-list">
+                <li><a href="assets/trace_teaser.png" download>trace_teaser.png</a></li>
+                <li><a href="assets/TR-07_tube.step" download>TR-07_tube.step</a></li>
+                <li><a href="assets/pcg.json" download>pcg.json</a></li>
+              </ul>
+            </div>
+
+            <div class="console-block">
+              <h2>Results</h2>
+              <div class="metrics" id="metrics-v1"></div>
+            </div>
+
+            <div class="console-block grow">
+              <h2>Solver log</h2>
+              <pre class="log" id="log-v1"></pre>
+            </div>
+          </aside>
+        </div>
+
+        <figure class="drawing">
+          <img src="assets/trace_teaser.png" alt="TRACE v1 isometric render of routed tube TR-07" loading="lazy">
+          <figcaption>Reference render — compressor discharge to aftercooler</figcaption>
+        </figure>
+      </section>
+
+      <section id="panel-v2" class="panel">
+        <div class="panel-head">
+          <div>
+            <h1>Compressor package</h1>
+            <p>Eight assets, five tube runs routed sequentially. Each routed tube is inflated and becomes an obstacle for the next.</p>
+          </div>
+          <p class="run-id">5 runs · 8 assets</p>
+        </div>
+
+        <div class="workspace">
+          <div class="viewer-shell">
+            <div class="viewer-wrap" id="viewer-v2"></div>
+            <p class="viewer-hint">Orbit · zoom · pan</p>
+          </div>
+
+          <aside class="console">
+            <div class="console-block">
+              <button class="btn" id="run-v2" type="button">Run all routes</button>
+              <ul class="file-list">
+                <li><a href="assets/trace_teaser_v2.png" download>trace_teaser_v2.png</a></li>
+                <li><a href="assets/package_piping_v2.step" download>package_piping_v2.step</a></li>
+                <li><a href="assets/pcg_v2.json" download>pcg_v2.json</a></li>
+              </ul>
+            </div>
+
+            <div class="console-block">
+              <h2>Results</h2>
+              <div class="metrics" id="metrics-v2"></div>
+            </div>
+
+            <div class="console-block grow">
+              <h2>Solver log</h2>
+              <pre class="log" id="log-v2"></pre>
+            </div>
+          </aside>
+        </div>
+
+        <figure class="drawing">
+          <img src="assets/trace_teaser_v2.png" alt="TRACE v2 package piping isometric and plan views" loading="lazy">
+          <figcaption>Reference render — isometric and plan views</figcaption>
+        </figure>
+      </section>
+
+      <section id="panel-v3" class="panel">
+        <div class="panel-head">
+          <div>
+            <h1>Component-in-assembly</h1>
+            <p>Hole-pattern registration, constraint-solved parameters, parametric adapter flange, then a deterministic compliance report.</p>
+          </div>
+          <p class="run-id verdict">Approved for review</p>
+        </div>
+
+        <div class="report">
+          <table class="checks">
+            <thead>
+              <tr>
+                <th>Check</th>
+                <th>Status</th>
+                <th>Evidence</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>HOLE-ALIGN</td>
+                <td><span class="pass">PASS</span></td>
+                <td>max axis deviation 0.000&nbsp;mm ≤ 0.10&nbsp;mm</td>
+              </tr>
+              <tr>
+                <td>COVERAGE</td>
+                <td><span class="pass">PASS</span></td>
+                <td>plate OD 175.2 ≥ opening 82 + 2×12 seal land = 106.0&nbsp;mm</td>
+              </tr>
+              <tr>
+                <td>ENVELOPE</td>
+                <td><span class="pass">PASS</span></td>
+                <td>protrusion 70.0&nbsp;mm ≤ max 70.0&nbsp;mm</td>
+              </tr>
+              <tr>
+                <td>PATTERN</td>
+                <td><span class="pass">PASS</span></td>
+                <td>8× diam 11 on BC diam 140 from extracted pattern</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <ul class="file-list inline">
+            <li><a href="assets/trace_teaser_v3_component.png" download>trace_teaser_v3_component.png</a></li>
+            <li><a href="assets/component_in_assembly.step" download>component_in_assembly.step</a></li>
           </ul>
-          <div class="downloads">
-            <a href="assets/trace_teaser_v3_component.png" download>PNG render</a>
-            <a href="assets/component_in_assembly.step" download>STEP assembly</a>
-          </div>
         </div>
-      </div>
-      <img class="render-img" src="assets/trace_teaser_v3_component.png" alt="TRACE v3 component render" loading="lazy">
-    </section>
-  </main>
 
-  <footer>
-    TRACE teaser demo · Python CAD pipeline + browser A* router · GitHub Pages
-  </footer>
+        <figure class="drawing">
+          <img src="assets/trace_teaser_v3_component.png" alt="TRACE v3 assembled and exploded adapter flange" loading="lazy">
+          <figcaption>Assembled and exploded views of the adapter flange</figcaption>
+        </figure>
+      </section>
+    </main>
+
+    <footer>
+      <span>TRACE teaser demo</span>
+      <span>Python CAD pipeline · browser A* router</span>
+    </footer>
+  </div>
 
   <script type="module" src="js/app.js"></script>
 </body>
