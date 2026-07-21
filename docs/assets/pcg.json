@@ -1,0 +1,136 @@
+{
+  "components": [
+    {
+      "id": "C1",
+      "cls": "compressor",
+      "bbox_min": {
+        "x": 150.0,
+        "y": 150.0,
+        "z": 0.0
+      },
+      "bbox_max": {
+        "x": 750.0,
+        "y": 650.0,
+        "z": 600.0
+      },
+      "provenance": [
+        {
+          "source": "step:skid.step:C1"
+        }
+      ]
+    },
+    {
+      "id": "A1",
+      "cls": "aftercooler",
+      "bbox_min": {
+        "x": 1300.0,
+        "y": 200.0,
+        "z": 0.0
+      },
+      "bbox_max": {
+        "x": 1800.0,
+        "y": 500.0,
+        "z": 450.0
+      },
+      "provenance": [
+        {
+          "source": "step:skid.step:A1"
+        }
+      ]
+    },
+    {
+      "id": "V1",
+      "cls": "vessel",
+      "bbox_min": {
+        "x": 950.0,
+        "y": 450.0,
+        "z": 0.0
+      },
+      "bbox_max": {
+        "x": 1200.0,
+        "y": 750.0,
+        "z": 800.0
+      },
+      "provenance": [
+        {
+          "source": "step:skid.step:V1"
+        }
+      ]
+    }
+  ],
+  "ports": [
+    {
+      "id": "C1.N2",
+      "parent": "C1",
+      "dn_mm": 50.0,
+      "standard": "EN 1092-1 PN16",
+      "position": {
+        "x": 750.0,
+        "y": 400.0,
+        "z": 500.0
+      },
+      "normal": {
+        "x": 1.0,
+        "y": 0.0,
+        "z": 0.0
+      },
+      "provenance": [
+        {
+          "source": "drawing:P-1042:(412,318,441,335)"
+        }
+      ]
+    },
+    {
+      "id": "A1.IN",
+      "parent": "A1",
+      "dn_mm": 50.0,
+      "standard": "EN 1092-1 PN16",
+      "position": {
+        "x": 1550.0,
+        "y": 200.0,
+        "z": 450.0
+      },
+      "normal": {
+        "x": 0.0,
+        "y": -1.0,
+        "z": 0.0
+      },
+      "provenance": [
+        {
+          "source": "drawing:P-1042:(602,410,631,428)"
+        }
+      ]
+    }
+  ],
+  "tube_runs": [
+    {
+      "id": "TR-07",
+      "from_port": "C1.N2",
+      "to_port": "A1.IN",
+      "dn_mm": 50.0,
+      "min_bend_radius_mm": 75.0,
+      "clearance_mm": 60.0,
+      "provenance": [
+        {
+          "source": "nl:req-3:'route discharge line N2 to aftercooler inlet'"
+        }
+      ]
+    }
+  ],
+  "zones": [
+    {
+      "id": "SKID",
+      "kind": "skid_envelope",
+      "bbox_min": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.0
+      },
+      "bbox_max": {
+        "x": 2000.0,
+        "y": 1000.0,
+        "z": 1100.0
+      }
+    }
+  ]
+}

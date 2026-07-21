@@ -1,0 +1,451 @@
+{
+  "components": [
+    {
+      "id": "F1",
+      "cls": "vessel",
+      "bbox_min": {
+        "x": 100.0,
+        "y": 800.0,
+        "z": 0.0
+      },
+      "bbox_max": {
+        "x": 300.0,
+        "y": 1000.0,
+        "z": 500.0
+      },
+      "provenance": [
+        {
+          "source": "step:pkg:F1"
+        }
+      ]
+    },
+    {
+      "id": "C1",
+      "cls": "compressor",
+      "bbox_min": {
+        "x": 400.0,
+        "y": 300.0,
+        "z": 0.0
+      },
+      "bbox_max": {
+        "x": 1100.0,
+        "y": 900.0,
+        "z": 700.0
+      },
+      "provenance": [
+        {
+          "source": "step:pkg:C1"
+        }
+      ]
+    },
+    {
+      "id": "M1",
+      "cls": "vessel",
+      "bbox_min": {
+        "x": 1150.0,
+        "y": 550.0,
+        "z": 0.0
+      },
+      "bbox_max": {
+        "x": 1500.0,
+        "y": 900.0,
+        "z": 600.0
+      },
+      "provenance": [
+        {
+          "source": "step:pkg:M1"
+        }
+      ]
+    },
+    {
+      "id": "A1",
+      "cls": "aftercooler",
+      "bbox_min": {
+        "x": 1600.0,
+        "y": 700.0,
+        "z": 0.0
+      },
+      "bbox_max": {
+        "x": 2100.0,
+        "y": 1000.0,
+        "z": 500.0
+      },
+      "provenance": [
+        {
+          "source": "step:pkg:A1"
+        }
+      ]
+    },
+    {
+      "id": "V1",
+      "cls": "vessel",
+      "bbox_min": {
+        "x": 1700.0,
+        "y": 150.0,
+        "z": 0.0
+      },
+      "bbox_max": {
+        "x": 1950.0,
+        "y": 450.0,
+        "z": 900.0
+      },
+      "provenance": [
+        {
+          "source": "step:pkg:V1"
+        }
+      ]
+    },
+    {
+      "id": "R1",
+      "cls": "vessel",
+      "bbox_min": {
+        "x": 300.0,
+        "y": 100.0,
+        "z": 0.0
+      },
+      "bbox_max": {
+        "x": 700.0,
+        "y": 450.0,
+        "z": 1000.0
+      },
+      "provenance": [
+        {
+          "source": "step:pkg:R1"
+        }
+      ]
+    },
+    {
+      "id": "DH",
+      "cls": "vessel",
+      "bbox_min": {
+        "x": 2300.0,
+        "y": 60.0,
+        "z": 0.0
+      },
+      "bbox_max": {
+        "x": 2400.0,
+        "y": 140.0,
+        "z": 200.0
+      },
+      "provenance": [
+        {
+          "source": "step:pkg:DH"
+        }
+      ]
+    },
+    {
+      "id": "CT",
+      "cls": "frame",
+      "bbox_min": {
+        "x": 0.0,
+        "y": 560.0,
+        "z": 950.0
+      },
+      "bbox_max": {
+        "x": 2400.0,
+        "y": 640.0,
+        "z": 1050.0
+      },
+      "provenance": [
+        {
+          "source": "step:pkg:cable-tray"
+        }
+      ]
+    }
+  ],
+  "ports": [
+    {
+      "id": "F1.OUT",
+      "parent": "F1",
+      "dn_mm": 80.0,
+      "standard": "EN 1092-1 PN16",
+      "position": {
+        "x": 200.0,
+        "y": 900.0,
+        "z": 500.0
+      },
+      "normal": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 1.0
+      },
+      "provenance": [
+        {
+          "source": "drawing:PID-01:(102,64)"
+        }
+      ]
+    },
+    {
+      "id": "C1.IN",
+      "parent": "C1",
+      "dn_mm": 80.0,
+      "standard": "EN 1092-1 PN16",
+      "position": {
+        "x": 550.0,
+        "y": 800.0,
+        "z": 700.0
+      },
+      "normal": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 1.0
+      },
+      "provenance": [
+        {
+          "source": "drawing:PID-01:(141,63)"
+        }
+      ]
+    },
+    {
+      "id": "C1.N2",
+      "parent": "C1",
+      "dn_mm": 50.0,
+      "standard": "EN 1092-1 PN16",
+      "position": {
+        "x": 1100.0,
+        "y": 600.0,
+        "z": 650.0
+      },
+      "normal": {
+        "x": 1.0,
+        "y": 0.0,
+        "z": 0.0
+      },
+      "provenance": [
+        {
+          "source": "drawing:PID-01:(198,71)"
+        }
+      ]
+    },
+    {
+      "id": "A1.IN",
+      "parent": "A1",
+      "dn_mm": 50.0,
+      "standard": "EN 1092-1 PN16",
+      "position": {
+        "x": 1700.0,
+        "y": 850.0,
+        "z": 500.0
+      },
+      "normal": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 1.0
+      },
+      "provenance": [
+        {
+          "source": "drawing:PID-01:(244,58)"
+        }
+      ]
+    },
+    {
+      "id": "A1.OUT",
+      "parent": "A1",
+      "dn_mm": 50.0,
+      "standard": "EN 1092-1 PN16",
+      "position": {
+        "x": 1850.0,
+        "y": 700.0,
+        "z": 100.0
+      },
+      "normal": {
+        "x": 0.0,
+        "y": -1.0,
+        "z": 0.0
+      },
+      "provenance": [
+        {
+          "source": "drawing:PID-01:(251,90)"
+        }
+      ]
+    },
+    {
+      "id": "V1.IN",
+      "parent": "V1",
+      "dn_mm": 50.0,
+      "standard": "EN 1092-1 PN16",
+      "position": {
+        "x": 1825.0,
+        "y": 450.0,
+        "z": 700.0
+      },
+      "normal": {
+        "x": 0.0,
+        "y": 1.0,
+        "z": 0.0
+      },
+      "provenance": [
+        {
+          "source": "drawing:PID-01:(255,118)"
+        }
+      ]
+    },
+    {
+      "id": "V1.OUT",
+      "parent": "V1",
+      "dn_mm": 50.0,
+      "standard": "EN 1092-1 PN16",
+      "position": {
+        "x": 1825.0,
+        "y": 300.0,
+        "z": 900.0
+      },
+      "normal": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 1.0
+      },
+      "provenance": [
+        {
+          "source": "drawing:PID-01:(255,131)"
+        }
+      ]
+    },
+    {
+      "id": "R1.IN",
+      "parent": "R1",
+      "dn_mm": 50.0,
+      "standard": "EN 1092-1 PN16",
+      "position": {
+        "x": 700.0,
+        "y": 275.0,
+        "z": 800.0
+      },
+      "normal": {
+        "x": 1.0,
+        "y": 0.0,
+        "z": 0.0
+      },
+      "provenance": [
+        {
+          "source": "drawing:PID-01:(88,140)"
+        }
+      ]
+    },
+    {
+      "id": "V1.DRAIN",
+      "parent": "V1",
+      "dn_mm": 25.0,
+      "standard": "EN 1092-1 PN16",
+      "position": {
+        "x": 1825.0,
+        "y": 150.0,
+        "z": 100.0
+      },
+      "normal": {
+        "x": 0.0,
+        "y": -1.0,
+        "z": 0.0
+      },
+      "provenance": [
+        {
+          "source": "drawing:PID-01:(255,150)"
+        }
+      ]
+    },
+    {
+      "id": "DH.IN",
+      "parent": "DH",
+      "dn_mm": 25.0,
+      "standard": "EN 1092-1 PN16",
+      "position": {
+        "x": 2300.0,
+        "y": 100.0,
+        "z": 100.0
+      },
+      "normal": {
+        "x": -1.0,
+        "y": 0.0,
+        "z": 0.0
+      },
+      "provenance": [
+        {
+          "source": "drawing:PID-01:(310,152)"
+        }
+      ]
+    }
+  ],
+  "tube_runs": [
+    {
+      "id": "TR-01",
+      "from_port": "F1.OUT",
+      "to_port": "C1.IN",
+      "dn_mm": 80.0,
+      "min_bend_radius_mm": 120.0,
+      "clearance_mm": 60.0,
+      "provenance": [
+        {
+          "source": "nl:req-1:'suction line filter to compressor'"
+        }
+      ]
+    },
+    {
+      "id": "TR-02",
+      "from_port": "C1.N2",
+      "to_port": "A1.IN",
+      "dn_mm": 50.0,
+      "min_bend_radius_mm": 75.0,
+      "clearance_mm": 60.0,
+      "provenance": [
+        {
+          "source": "nl:req-2:'discharge to aftercooler'"
+        }
+      ]
+    },
+    {
+      "id": "TR-03",
+      "from_port": "A1.OUT",
+      "to_port": "V1.IN",
+      "dn_mm": 50.0,
+      "min_bend_radius_mm": 75.0,
+      "clearance_mm": 60.0,
+      "provenance": [
+        {
+          "source": "nl:req-3:'cooler outlet to separator'"
+        }
+      ]
+    },
+    {
+      "id": "TR-04",
+      "from_port": "V1.OUT",
+      "to_port": "R1.IN",
+      "dn_mm": 50.0,
+      "min_bend_radius_mm": 75.0,
+      "clearance_mm": 60.0,
+      "provenance": [
+        {
+          "source": "nl:req-4:'separator to receiver'"
+        }
+      ]
+    },
+    {
+      "id": "TR-05",
+      "from_port": "V1.DRAIN",
+      "to_port": "DH.IN",
+      "dn_mm": 25.0,
+      "min_bend_radius_mm": 40.0,
+      "clearance_mm": 50.0,
+      "provenance": [
+        {
+          "source": "nl:req-5:'condensate drain to header'"
+        }
+      ]
+    }
+  ],
+  "zones": [
+    {
+      "id": "SKID",
+      "kind": "skid_envelope",
+      "bbox_min": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.0
+      },
+      "bbox_max": {
+        "x": 2400.0,
+        "y": 1200.0,
+        "z": 1400.0
+      }
+    }
+  ]
+}
